@@ -39,11 +39,11 @@ export const products: Product[] = [
   },
   {
     id: "gaming-chair",
-    name: "Gaming Chair Pro",
+    name: "Ergonomic Chair + Footrest",
     category: "chair",
-    pricePerWeek: 9,
-    image: "https://strapi.monis.rent/uploads/fantech_oca259s_chair_6_b632a0c529.jpg",
-    description: "Racing-style, high backrest, adjustable headrest",
+    pricePerWeek: 10,
+    image: "https://strapi.monis.rent/uploads/fantech_oca259s_chair_7_d0b9bd2d1e.jpg",
+    description: "Full package: mesh chair + retractable footrest, max comfort",
   },
 
   // Monitors
