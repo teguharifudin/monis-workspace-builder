@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# monis.rent Workspace Builder
 
-## Getting Started
+An interactive workspace configurator for [monis.rent](https://monis.rent) — build your dream Bali office setup visually, then rent it.
 
-First, run the development server:
+**Live URL:** [https://monis-workspace-builder.vercel.app](https://monis-workspace-builder.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Approach
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+I focused on making the experience feel fast and tactile. The builder is split into three guided steps (Desk → Chair → Accessories) with a live preview panel that updates in real-time using Framer Motion animations. Product images are pulled directly from monis.rent's Strapi CDN so everything looks authentic.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The layout is intentionally split: selector on the left, visual preview on the right — so users always see the impact of their choices immediately. The checkout modal handles duration selection and collects delivery info before confirming.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Choices
 
-## Learn More
+- **Next.js 15 (App Router)** — required, also gives great image optimization
+- **Tailwind CSS** — required, fast to build clean UI
+- **Framer Motion** — smooth enter/exit animations for items appearing in the preview
+- **Vercel** — zero-config deploy, required
 
-To learn more about Next.js, take a look at the following resources:
+## What I'd Improve With More Time
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Drag-and-drop** positioning of items in the preview canvas (using `@dnd-kit`)
+- **Isometric/3D room view** instead of flat layered images — would make the preview much more immersive
+- **Real pricing API** from monis.rent Strapi instead of hardcoded data
+- **Saved configurations** via URL params so users can share their setup
+- **Mobile swipe gestures** for switching between steps

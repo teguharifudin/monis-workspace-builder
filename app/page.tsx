@@ -1,65 +1,225 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { desks, chairs, accessories, Product } from "@/data/products";
+import WorkspacePreview from "@/components/WorkspacePreview";
+import ProductCard from "@/components/ProductCard";
+import CheckoutModal from "@/components/CheckoutModal";
+
+type Step = "desk" | "chair" | "accessories";
+
+const STEPS: { id: Step; label: string; emoji: string }[] = [
+  { id: "desk", label: "Desk", emoji: "🪑" },
+  { id: "chair", label: "Chair", emoji: "💺" },
+  { id: "accessories", label: "Extras", emoji: "🖥️" },
+];
 
 export default function Home() {
+  const [step, setStep] = useState<Step>("desk");
+  const [selectedDesk, setSelectedDesk] = useState<Product | null>(null);
+  const [selectedChair, setSelectedChair] = useState<Product | null>(null);
+  const [selectedAccessories, setSelectedAccessories] = useState<Product[]>([]);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  const totalItems = [selectedDesk, selectedChair, ...selectedAccessories].filter(Boolean).length;
+  const weeklyTotal = [selectedDesk, selectedChair, ...selectedAccessories]
+    .filter(Boolean)
+    .reduce((sum, p) => sum + p!.pricePerWeek, 0);
+
+  function toggleAccessory(product: Product) {
+    setSelectedAccessories((prev) =>
+      prev.find((p) => p.id === product.id)
+        ? prev.filter((p) => p.id !== product.id)
+        : [...prev, product]
+    );
+  }
+
+  const stepProducts = step === "desk" ? desks : step === "chair" ? chairs : accessories;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-stone-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b border-stone-100 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+        <div className="flex items-center gap-2">
+          <Image
+            src="https://www.monis.rent/img/monisrent-white.png"
+            alt="monis.rent"
+            width={90}
+            height={24}
+            style={{ width: "auto", height: "24px" }}
+            className="invert"
+            unoptimized
+          />
+          <span className="text-stone-300 text-sm hidden sm:block">|</span>
+          <span className="text-stone-500 text-sm hidden sm:block">Workspace Builder</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="flex items-center gap-3">
+          {totalItems > 0 && (
+            <span className="text-sm text-stone-600">
+              <span className="font-bold text-stone-900">${weeklyTotal}</span>/wk
+            </span>
+          )}
+          <button
+            onClick={() => setCheckoutOpen(true)}
+            disabled={totalItems === 0}
+            className="bg-black text-white text-sm px-4 py-2 rounded-full font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:bg-stone-800 transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            Rent ({totalItems})
+          </button>
+        </div>
+      </header>
+
+      <div className="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full overflow-hidden" style={{ height: 'calc(100vh - 57px)' }}>
+        {/* Left panel - selector */}
+        <div className="lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border-r border-stone-100 bg-white h-full">
+          {/* Step tabs */}
+          <div className="flex border-b border-stone-100">
+            {STEPS.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setStep(s.id)}
+                className={`flex-1 py-3 text-sm font-medium transition-all relative ${
+                  step === s.id ? "text-stone-900" : "text-stone-400 hover:text-stone-600"
+                }`}
+              >
+                <span className="mr-1">{s.emoji}</span>
+                {s.label}
+                {step === s.id && (
+                  <motion.div
+                    layoutId="tab-indicator"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Step hint */}
+          <div className="px-4 py-3 bg-stone-50 border-b border-stone-100">
+            <p className="text-xs text-stone-500">
+              {step === "desk" && "Choose your desk — the foundation of your setup"}
+              {step === "chair" && "Pick a chair you'll actually want to sit in all day"}
+              {step === "accessories" && "Add monitors, lamps & accessories to complete the vibe"}
+            </p>
+          </div>
+
+          {/* Products grid */}
+          <div className="flex-1 overflow-y-auto p-3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.15 }}
+                className="grid grid-cols-2 gap-2"
+              >
+                {stepProducts.map((product) => {
+                  const isSelected =
+                    step === "desk"
+                      ? selectedDesk?.id === product.id
+                      : step === "chair"
+                      ? selectedChair?.id === product.id
+                      : !!selectedAccessories.find((p) => p.id === product.id);
+
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      selected={isSelected}
+                      onSelect={() => {
+                        if (step === "desk")
+                          setSelectedDesk(isSelected ? null : product);
+                        else if (step === "chair")
+                          setSelectedChair(isSelected ? null : product);
+                        else toggleAccessory(product);
+                      }}
+                    />
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Next step button */}
+          <div className="p-3 border-t border-stone-100">
+            {step !== "accessories" ? (
+              <button
+                onClick={() => setStep(step === "desk" ? "chair" : "accessories")}
+                className="w-full bg-stone-900 text-white py-2.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-colors"
+              >
+                Next: {step === "desk" ? "Choose Chair →" : "Add Accessories →"}
+              </button>
+            ) : (
+              <button
+                onClick={() => setCheckoutOpen(true)}
+                disabled={totalItems === 0}
+                className="w-full bg-black text-white py-2.5 rounded-full text-sm font-semibold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-stone-800 transition-colors"
+              >
+                Rent My Workspace 🏝️
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Right panel - preview */}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-stone-900">Your Workspace Preview</h1>
+              <p className="text-sm text-stone-500">Updates live as you build</p>
+            </div>
+            {totalItems > 0 && (
+              <div className="text-right">
+                <p className="text-2xl font-bold text-stone-900">${weeklyTotal}<span className="text-sm font-normal text-stone-500">/wk</span></p>
+                <p className="text-xs text-stone-400">{totalItems} item{totalItems !== 1 ? "s" : ""} selected</p>
+              </div>
+            )}
+          </div>
+
+          <div className="w-full">
+            <WorkspacePreview
+              desk={selectedDesk}
+              chair={selectedChair}
+              accessories={selectedAccessories}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+
+          {/* Selected items chips */}
+          {totalItems > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-wrap gap-2"
+            >
+              {[selectedDesk, selectedChair, ...selectedAccessories]
+                .filter(Boolean)
+                .map((item) => (
+                  <span
+                    key={item!.id}
+                    className="inline-flex items-center gap-1.5 bg-white border border-stone-200 text-stone-700 text-xs px-3 py-1.5 rounded-full"
+                  >
+                    <span className="w-4 h-4 relative flex-shrink-0">
+                      <Image src={item!.image} alt="" fill className="object-contain" unoptimized />
+                    </span>
+                    {item!.name}
+                    <span className="text-stone-400">${item!.pricePerWeek}/wk</span>
+                  </span>
+                ))}
+            </motion.div>
+          )}
         </div>
-      </main>
+      </div>
+
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        desk={selectedDesk}
+        chair={selectedChair}
+        accessories={selectedAccessories}
+      />
     </div>
   );
 }
