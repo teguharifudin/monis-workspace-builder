@@ -18,23 +18,25 @@ const STEPS: { id: Step; label: string; emoji: string }[] = [
 
 export default function Home() {
   const [step, setStep] = useState<Step>("desk");
-  const [selectedDesk, setSelectedDesk] = useState<Product | null>(null);
-  const [selectedChair, setSelectedChair] = useState<Product | null>(null);
-  const [selectedAccessories, setSelectedAccessories] = useState<Product[]>([]);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Product[]>([]);
 
-  const totalItems = [selectedDesk, selectedChair, ...selectedAccessories].filter(Boolean).length;
-  const weeklyTotal = [selectedDesk, selectedChair, ...selectedAccessories]
-    .filter(Boolean)
-    .reduce((sum, p) => sum + p!.pricePerWeek, 0);
-
-  function toggleAccessory(product: Product) {
-    setSelectedAccessories((prev) =>
+  function toggle(product: Product) {
+    setSelectedItems((prev) =>
       prev.find((p) => p.id === product.id)
         ? prev.filter((p) => p.id !== product.id)
         : [...prev, product]
     );
   }
+
+  const selectedDesk = selectedItems.filter((p) => p.category === "desk");
+  const selectedChair = selectedItems.filter((p) => p.category === "chair");
+  const selectedAccessories = selectedItems.filter(
+    (p) => p.category === "monitor" || p.category === "lamp" || p.category === "accessory"
+  );
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  const totalItems = selectedItems.length;
+  const weeklyTotal = selectedItems.reduce((sum, p) => sum + p.pricePerWeek, 0);
 
   const stepProducts = step === "desk" ? desks : step === "chair" ? chairs : accessories;
 
@@ -117,25 +119,14 @@ export default function Home() {
                 className="grid grid-cols-2 gap-2"
               >
                 {stepProducts.map((product) => {
-                  const isSelected =
-                    step === "desk"
-                      ? selectedDesk?.id === product.id
-                      : step === "chair"
-                      ? selectedChair?.id === product.id
-                      : !!selectedAccessories.find((p) => p.id === product.id);
+                  const isSelected = !!selectedItems.find((p) => p.id === product.id);
 
                   return (
                     <ProductCard
                       key={product.id}
                       product={product}
                       selected={isSelected}
-                      onSelect={() => {
-                        if (step === "desk")
-                          setSelectedDesk(isSelected ? null : product);
-                        else if (step === "chair")
-                          setSelectedChair(isSelected ? null : product);
-                        else toggleAccessory(product);
-                      }}
+                      onSelect={() => toggle(product)}
                     />
                   );
                 })}
@@ -181,8 +172,8 @@ export default function Home() {
 
           <div className="w-full">
             <WorkspacePreview
-              desk={selectedDesk}
-              chair={selectedChair}
+              desks={selectedDesk}
+              chairs={selectedChair}
               accessories={selectedAccessories}
             />
           </div>
@@ -194,18 +185,16 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-wrap gap-2"
             >
-              {[selectedDesk, selectedChair, ...selectedAccessories]
-                .filter(Boolean)
-                .map((item) => (
+              {selectedItems.map((item) => (
                   <span
-                    key={item!.id}
+                    key={item.id}
                     className="inline-flex items-center gap-1.5 bg-white border border-stone-200 text-stone-700 text-xs px-3 py-1.5 rounded-full"
                   >
                     <span className="w-4 h-4 relative flex-shrink-0">
-                      <Image src={item!.image} alt="" fill className="object-contain" unoptimized />
+                      <Image src={item.image} alt="" fill className="object-contain" unoptimized />
                     </span>
-                    {item!.name}
-                    <span className="text-stone-400">${item!.pricePerWeek}/wk</span>
+                    {item.name}
+                    <span className="text-stone-400">${item.pricePerWeek}/wk</span>
                   </span>
                 ))}
             </motion.div>
@@ -216,8 +205,8 @@ export default function Home() {
       <CheckoutModal
         isOpen={checkoutOpen}
         onClose={() => setCheckoutOpen(false)}
-        desk={selectedDesk}
-        chair={selectedChair}
+        desk={selectedDesk[0] ?? null}
+        chair={selectedChair[0] ?? null}
         accessories={selectedAccessories}
       />
     </div>

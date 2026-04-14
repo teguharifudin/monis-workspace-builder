@@ -5,8 +5,8 @@ import Image from "next/image";
 import { Product } from "@/data/products";
 
 interface WorkspacePreviewProps {
-  desk: Product | null;
-  chair: Product | null;
+  desks: Product[];
+  chairs: Product[];
   accessories: Product[];
 }
 
@@ -19,15 +19,7 @@ function EmptySlot({ label, icon }: { label: string; icon: string }) {
   );
 }
 
-function ItemSlot({
-  product,
-  animKey,
-  className = "",
-}: {
-  product: Product;
-  animKey: string;
-  className?: string;
-}) {
+function ItemSlot({ product, animKey }: { product: Product; animKey: string }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -36,7 +28,7 @@ function ItemSlot({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.85 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
-        className={`w-full h-full relative ${className}`}
+        className="w-full h-full relative"
       >
         <Image
           src={product.image}
@@ -55,17 +47,17 @@ function ItemSlot({
   );
 }
 
-export default function WorkspacePreview({ desk, chair, accessories }: WorkspacePreviewProps) {
-  const monitor = accessories.find((a) => a.category === "monitor");
-  const lamp = accessories.find((a) => a.category === "lamp");
+export default function WorkspacePreview({ desks, chairs, accessories }: WorkspacePreviewProps) {
+  const monitors = accessories.filter((a) => a.category === "monitor");
+  const lamps = accessories.filter((a) => a.category === "lamp");
   const others = accessories.filter((a) => a.category === "accessory");
 
-  const isEmpty = !desk && !chair && accessories.length === 0;
+  const isEmpty = desks.length === 0 && chairs.length === 0 && accessories.length === 0;
+  const hasContent = desks.length > 0 || chairs.length > 0 || accessories.length > 0;
 
   return (
     <div className="w-full rounded-2xl overflow-hidden bg-gradient-to-b from-slate-100 to-stone-200 p-4 flex flex-col gap-3">
 
-      {/* Empty state */}
       {isEmpty && (
         <div className="flex flex-col items-center justify-center py-16 text-stone-400 gap-2">
           <span className="text-5xl">🏝️</span>
@@ -74,90 +66,86 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         </div>
       )}
 
-      {/* Row 1: Monitor (full width) */}
-      {(desk || monitor) && (
-        <div className="w-full h-44 rounded-xl overflow-hidden bg-white/60 shadow-sm">
-          {monitor ? (
-            <ItemSlot product={monitor} animKey={monitor.id} />
-          ) : (
-            <EmptySlot label="Add a monitor" icon="🖥️" />
+      {/* Monitor row — semua monitor yang dipilih */}
+      {monitors.length > 0 && (
+        <div className="flex gap-3">
+          {monitors.map((monitor) => (
+            <div key={monitor.id} className="flex-1 h-44 rounded-xl overflow-hidden bg-white/60 shadow-sm">
+              <ItemSlot product={monitor} animKey={monitor.id} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Desks + Lamps row */}
+      {(desks.length > 0 || lamps.length > 0) && (
+        <div className="flex gap-3">
+          {desks.map((desk) => (
+            <div key={desk.id} className="flex-1 h-36 rounded-xl overflow-hidden bg-white/60 shadow-sm">
+              <ItemSlot product={desk} animKey={desk.id} />
+            </div>
+          ))}
+          {lamps.map((lamp) => (
+            <div key={lamp.id} className="w-28 h-36 rounded-xl overflow-hidden bg-white/60 shadow-sm flex-shrink-0">
+              <ItemSlot product={lamp} animKey={lamp.id} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Chairs row — show all selected chairs */}
+      {chairs.length > 0 && (
+        <div className="flex gap-3">
+          {chairs.map((chair) => (
+            <div key={chair.id} className="w-36 h-32 rounded-xl overflow-hidden bg-white/60 shadow-sm flex-shrink-0">
+              <ItemSlot product={chair} animKey={chair.id} />
+            </div>
+          ))}
+          {/* Accessories grid beside chairs */}
+          {others.length > 0 && (
+            <div className="flex-1 grid grid-cols-3 gap-2">
+              {others.slice(0, 6).map((acc) => (
+                <motion.div
+                  key={acc.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ type: "spring", stiffness: 320, damping: 26 }}
+                  className="h-[60px] rounded-lg overflow-hidden bg-white/60 shadow-sm relative"
+                >
+                  <Image src={acc.image} alt={acc.name} fill className="object-contain p-1" unoptimized />
+                </motion.div>
+              ))}
+            </div>
           )}
         </div>
       )}
 
-      {/* Row 2: Desk + Lamp side by side */}
-      {(desk || lamp) && (
-        <div className="flex gap-3">
-          <div className="flex-1 h-36 rounded-xl overflow-hidden bg-white/60 shadow-sm">
-            {desk ? (
-              <ItemSlot product={desk} animKey={desk.id} />
-            ) : (
-              <EmptySlot label="Add a desk" icon="🪵" />
-            )}
-          </div>
-          <div className="w-28 h-36 rounded-xl overflow-hidden bg-white/60 shadow-sm">
-            {lamp ? (
-              <ItemSlot product={lamp} animKey={lamp.id} />
-            ) : (
-              <EmptySlot label="Lamp" icon="💡" />
-            )}
-          </div>
+      {/* Accessories standalone (no chair selected) */}
+      {chairs.length === 0 && others.length > 0 && (
+        <div className="grid grid-cols-4 gap-2">
+          {others.slice(0, 8).map((acc) => (
+            <motion.div
+              key={acc.id}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="h-[70px] rounded-lg overflow-hidden bg-white/60 shadow-sm relative"
+            >
+              <Image src={acc.image} alt={acc.name} fill className="object-contain p-1" unoptimized />
+            </motion.div>
+          ))}
         </div>
       )}
 
-      {/* Row 3: Chair + Accessories */}
-      {(chair || others.length > 0) && (
-        <div className="flex gap-3">
-          <div className="w-36 h-32 rounded-xl overflow-hidden bg-white/60 shadow-sm flex-shrink-0">
-            {chair ? (
-              <ItemSlot product={chair} animKey={chair.id} />
-            ) : (
-              <EmptySlot label="Add a chair" icon="💺" />
-            )}
-          </div>
-          {/* Accessories grid */}
-          <div className="flex-1 grid grid-cols-3 gap-2">
-            {others.slice(0, 6).map((acc) => (
-              <motion.div
-                key={acc.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ type: "spring", stiffness: 320, damping: 26 }}
-                className="h-[60px] rounded-lg overflow-hidden bg-white/60 shadow-sm relative"
-              >
-                <Image
-                  src={acc.image}
-                  alt={acc.name}
-                  fill
-                  className="object-contain p-1"
-                  unoptimized
-                />
-              </motion.div>
-            ))}
-            {/* Empty slots to fill grid */}
-            {Array.from({ length: Math.max(0, 3 - others.length) }).map((_, i) => (
-              <div
-                key={`empty-${i}`}
-                className="h-[60px] rounded-lg border-2 border-dashed border-stone-200 bg-stone-50/50"
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Show desk-only row if only desk selected (no chair yet) */}
-      {desk && !chair && others.length === 0 && (
+      {/* Empty hints when partial selection */}
+      {desks.length > 0 && chairs.length === 0 && others.length === 0 && lamps.length === 0 && (
         <div className="flex gap-3">
           <div className="w-36 h-32 rounded-xl overflow-hidden bg-white/20 shadow-sm flex-shrink-0">
             <EmptySlot label="Add a chair" icon="💺" />
           </div>
           <div className="flex-1 grid grid-cols-3 gap-2">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={`empty-acc-${i}`}
-                className="h-[60px] rounded-lg border-2 border-dashed border-stone-200 bg-stone-50/50"
-              />
+              <div key={i} className="h-[60px] rounded-lg border-2 border-dashed border-stone-200 bg-stone-50/50" />
             ))}
           </div>
         </div>
