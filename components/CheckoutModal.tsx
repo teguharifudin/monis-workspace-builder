@@ -8,12 +8,13 @@ import { Product } from "@/data/products";
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onClear: () => void;
   desk: Product | null;
   chair: Product | null;
   accessories: Product[];
 }
 
-export default function CheckoutModal({ isOpen, onClose, desk, chair, accessories }: CheckoutModalProps) {
+export default function CheckoutModal({ isOpen, onClose, onClear, desk, chair, accessories }: CheckoutModalProps) {
   const [weeks, setWeeks] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", date: "" });
@@ -65,7 +66,7 @@ export default function CheckoutModal({ isOpen, onClose, desk, chair, accessorie
                     We'll contact you at <strong>{form.email}</strong> to confirm delivery details. Your Bali workspace is on its way!
                   </p>
                   <button
-                    onClick={() => { setSubmitted(false); onClose(); }}
+                    onClick={() => { setSubmitted(false); onClear(); onClose(); }}
                     className="mt-6 bg-black text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-stone-800 transition-colors"
                   >
                     Done
@@ -123,7 +124,7 @@ export default function CheckoutModal({ isOpen, onClose, desk, chair, accessorie
                       placeholder="Your name"
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-stone-400"
+                      className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-black focus:outline-none focus:border-stone-400"
                     />
                     <input
                       required
@@ -131,7 +132,7 @@ export default function CheckoutModal({ isOpen, onClose, desk, chair, accessorie
                       placeholder="Email address"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-stone-400"
+                      className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-black focus:outline-none focus:border-stone-400"
                     />
                     <input
                       required
@@ -139,7 +140,7 @@ export default function CheckoutModal({ isOpen, onClose, desk, chair, accessorie
                       placeholder="Delivery date"
                       value={form.date}
                       onChange={(e) => setForm({ ...form, date: e.target.value })}
-                      className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-stone-400"
+                      className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-black focus:outline-none focus:border-stone-400"
                     />
                     <button
                       type="submit"

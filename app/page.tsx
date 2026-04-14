@@ -205,6 +205,7 @@ export default function Home() {
       <CheckoutModal
         isOpen={checkoutOpen}
         onClose={() => setCheckoutOpen(false)}
+        onClear={() => setSelectedItems([])}
         desk={selectedDesk[0] ?? null}
         chair={selectedChair[0] ?? null}
         accessories={selectedAccessories}
