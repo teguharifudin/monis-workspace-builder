@@ -12,7 +12,7 @@ interface WorkspacePreviewProps {
 
 const sp = { type: "spring" as const, stiffness: 280, damping: 24 };
 
-const DESK_BOTTOM  = 10;
+const DESK_BOTTOM  = 12;
 const DESK_LEFT    = 15;
 const DESK_WIDTH   = 70;
 const DESK_CENTER  = DESK_LEFT + DESK_WIDTH / 2;
@@ -83,7 +83,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
           <motion.div key={chair.id}
             initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
             transition={sp} className="absolute"
-            style={{ zIndex: 20, bottom: "28%", left: "10%", width: "75%", maxHeight: "80%" }}
+            style={{ zIndex: 20, bottom: "30%", left: "10%", width: "75%", maxHeight: "80%" }}
           >
             <Img src={chair.image} alt={chair.name} />
           </motion.div>
