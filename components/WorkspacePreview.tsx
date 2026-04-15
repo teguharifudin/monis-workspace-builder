@@ -80,12 +80,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             exit={{ opacity: 0, scale: 0.5, y: 20 }}
             transition={spring}
             className="absolute z-10"
-            style={{ bottom: "28%", left: "50%", marginLeft: "-9%", width: "18%" }}
+            style={{ bottom: "28%", left: "50%", marginLeft: "-9%", width: "18%", mixBlendMode: "multiply" }}
           >
             <Image src={chair.image} alt={chair.name} width={300} height={300}
-              className="w-full h-auto"
-              style={{ mixBlendMode: "multiply" }}
-              unoptimized />
+              className="w-full h-auto" unoptimized />
           </motion.div>
         )}
       </AnimatePresence>
@@ -99,12 +97,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             exit={{ opacity: 0, scale: 0.7, y: 30 }}
             transition={{ ...spring, stiffness: 260 }}
             className="absolute z-20"
-            style={{ bottom: "28%", left: "50%", marginLeft: "-35%", width: "70%" }}
+            style={{ bottom: "28%", left: "50%", marginLeft: "-35%", width: "70%", mixBlendMode: "multiply" }}
           >
             <Image src={desk.image} alt={desk.name} width={700} height={700}
-              className="w-full h-auto"
-              style={{ mixBlendMode: "multiply" }}
-              unoptimized />
+              className="w-full h-auto" unoptimized />
           </motion.div>
         )}
       </AnimatePresence>
@@ -130,11 +126,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ ...spring, delay: i * 0.1 }}
+                style={{ mixBlendMode: "multiply" }}
               >
                 <Image src={m.image} alt={m.name} width={400} height={400}
-                  className="w-full h-auto"
-                  style={{ mixBlendMode: "multiply" }}
-                  unoptimized />
+                  className="w-full h-auto" unoptimized />
               </motion.div>
             ))}
           </motion.div>
@@ -150,12 +145,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             exit={{ opacity: 0, x: 15, rotate: 15 }}
             transition={spring}
             className="absolute z-30"
-            style={{ bottom: "44%", right: "15%", width: "7%" }}
+            style={{ bottom: "44%", right: "15%", width: "7%", mixBlendMode: "multiply" }}
           >
             <Image src={lamp.image} alt={lamp.name} width={100} height={100}
-              className="w-full h-auto"
-              style={{ mixBlendMode: "multiply" }}
-              unoptimized />
+              className="w-full h-auto" unoptimized />
           </motion.div>
         )}
       </AnimatePresence>
@@ -172,11 +165,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.3 }}
                 transition={{ ...spring, delay: i * 0.07 }}
+                style={{ mixBlendMode: "multiply" }}
               >
                 <Image src={acc.image} alt={acc.name} width={80} height={80}
-                  className="w-full h-auto"
-                  style={{ mixBlendMode: "multiply" }}
-                  unoptimized />
+                  className="w-full h-auto" unoptimized />
               </motion.div>
             ))}
           </motion.div>
