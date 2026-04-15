@@ -31,31 +31,27 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
   const isEmpty = !desk && !chair && accessories.length === 0;
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden relative select-none" style={{ aspectRatio: "16/9" }}>
+    <div className="w-full rounded-2xl overflow-hidden relative select-none" style={{ aspectRatio: "16/9", isolation: "isolate" }}>
 
-      {/* === BACKGROUND — terang agar multiply bekerja === */}
-      {/* Wall — warm light gray */}
-      <div className="absolute inset-0" style={{ background: "#f0ece6" }} />
-      {/* Wall gradient subtle */}
-      <div className="absolute inset-0" style={{
-        background: "linear-gradient(180deg, #e8e2da 0%, #f0ece6 40%, #f0ece6 55%, #d4c4a8 55%, #c8b490 100%)"
+      {/* BASE: putih murni — wajib agar multiply = transparan */}
+      <div className="absolute inset-0" style={{ background: "#ffffff" }} />
+
+      {/* WALL: warna dinding di z-index 1, items mulai z-10 ke atas */}
+      <div className="absolute inset-0" style={{ zIndex: 1,
+        background: "linear-gradient(180deg, #cdd8e3 0%, #dde8f0 50%, #dde8f0 50%, #c8b088 50%, #b89a6a 100%)"
       }} />
-      {/* Floor wood planks */}
-      <div className="absolute bottom-0 left-0 right-0" style={{
-        height: "45%",
-        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 59px, rgba(160,120,60,0.12) 60px)",
-        backgroundSize: "60px 100%",
+
+      {/* Floor planks */}
+      <div className="absolute bottom-0 left-0 right-0" style={{ zIndex: 2, height: "50%",
+        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 79px, rgba(100,60,10,0.07) 80px)",
       }} />
-      {/* Floor sheen */}
-      <div className="absolute bottom-0 left-0 right-0" style={{
-        height: "45%",
-        background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 40%)",
-      }} />
+
       {/* Wall/floor line */}
-      <div className="absolute left-0 right-0 h-[2px]" style={{ bottom: "45%", background: "rgba(160,130,90,0.3)" }} />
-      {/* Vignette */}
-      <div className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{ boxShadow: "inset 0 0 80px rgba(0,0,0,0.12)" }} />
+      <div className="absolute left-0 right-0 h-px" style={{ zIndex: 2, bottom: "50%", background: "rgba(120,90,50,0.25)" }} />
+
+      {/* Vignette — z-index tinggi tapi pointer-events-none */}
+      <div className="absolute inset-0 rounded-2xl" style={{ zIndex: 50, pointerEvents: "none",
+        boxShadow: "inset 0 0 60px rgba(0,0,0,0.10)" }} />
 
       {/* === EMPTY STATE === */}
       {isEmpty && (
