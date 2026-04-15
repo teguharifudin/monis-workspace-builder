@@ -27,10 +27,9 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
   const others   = accessories.filter((a) => a.category === "accessory");
   const isEmpty  = !desk && !chair && accessories.length === 0;
 
-  // Items yang tampil di atas meja (dengan atau tanpa meja)
-  const deskItems = [...monitors, ...others]; // monitor, keyboard, mouse, webcam, dll
+  // Semua items di atas meja dalam satu row: monitor, lamp, accessories
+  const deskItems = [...monitors, ...lamps, ...others];
   const hasDeskItems = deskItems.length > 0;
-  const hasLamp = lamps.length > 0;
 
   return (
     <div className="w-full rounded-2xl overflow-hidden relative select-none" style={{ aspectRatio: "16/9" }}>
@@ -90,7 +89,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* ── MONITORS + ACCESSORIES di atas meja ── */}
+      {/* ── MONITORS + LAMP + ACCESSORIES di atas meja ── */}
       <AnimatePresence>
         {hasDeskItems && (
           <motion.div key="desk-items"
@@ -113,24 +112,6 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             ))}
           </motion.div>
         )}
-      </AnimatePresence>
-
-      {/* ── LAMP ── di samping meja (kanan) */}
-      <AnimatePresence>
-        {hasLamp && lamps.map((lamp, i) => (
-          <motion.div key={lamp.id}
-            initial={{ opacity: 0, x: 20, rotate: 15 }} animate={{ opacity: 1, x: 0, rotate: 0 }} exit={{ opacity: 0, x: 15 }}
-            transition={{ ...sp, delay: i * 0.1 }} className="absolute"
-            style={{
-              zIndex: 30,
-              top: `${100 - DESK_SURFACE - 52}%`,
-              left: desk ? `${DESK_RIGHT - 12 - i * 9}%` : `${75 + i * 8}%`,
-              width: "8%",
-            }}
-          >
-            <Img src={lamp.image} alt={lamp.name} />
-          </motion.div>
-        ))}
       </AnimatePresence>
 
       {/* BADGE */}
