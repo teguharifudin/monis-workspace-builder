@@ -80,10 +80,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute z-10"
             style={{
               ...MX,
-              bottom: "43%",
+              bottom: "2%",
               left: "50%",
               transform: "translateX(-30%)",
-              width: "20%",
+              width: "18%",
             }}
           >
             <Image src={chair.image} alt={chair.name} width={400} height={400}
@@ -103,10 +103,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute z-20"
             style={{
               ...MX,
-              bottom: "43%",
+              bottom: "2%",
               left: "50%",
               transform: "translateX(-50%)",
-              width: "52%",
+              width: "60%",
             }}
           >
             <Image src={desk.image} alt={desk.name} width={600} height={600}
@@ -126,9 +126,9 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             transition={sp}
             className="absolute z-30 flex items-end gap-[0.5%]"
             style={{
-              bottom: "60%",
+              bottom: "38%",
               left: "50%",
-              transform: `translateX(${monitors.length === 1 ? "-50%" : monitors.length === 2 ? "-50%" : "-50%"})`,
+              transform: "translateX(-50%)",
               width: monitors.length === 1 ? "30%" : monitors.length === 2 ? "46%" : "58%",
             }}
           >
@@ -156,7 +156,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             exit={{ opacity: 0, x: 12 }}
             transition={sp}
             className="absolute z-30"
-            style={{ ...MX, bottom: "56%", right: "22%", width: "7%" }}
+            style={{ ...MX, bottom: "32%", right: "18%", width: "7%" }}
           >
             <Image src={lamp.image} alt={lamp.name} width={120} height={120}
               className="w-full h-auto" unoptimized />
@@ -168,7 +168,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
       <AnimatePresence>
         {desk && others.length > 0 && (
           <motion.div key="acc-row" className="absolute z-30 flex items-end gap-[1%]"
-            style={{ bottom: "55%", left: "24%", width: "20%" }}
+            style={{ bottom: "31%", left: "22%", width: "22%" }}
           >
             {others.slice(0, 4).map((acc, i) => (
               <motion.div key={acc.id} className="flex-1"
