@@ -64,28 +64,28 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         </motion.div>
       )}
 
-      {/* ── CHAIR ── z-10, di belakang meja */}
-      <AnimatePresence>
-        {chair && (
-          <motion.div key={chair.id}
-            initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
-            transition={sp} className="absolute"
-            style={{ zIndex: 10, bottom: `${DESK_BOTTOM}%`, left: "10%", width: "75%", maxHeight: "80%" }}
-          >
-            <Img src={chair.image} alt={chair.name} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── DESK ── z-20 */}
+      {/* ── DESK ── z-10, di belakang kursi */}
       <AnimatePresence>
         {desk && (
           <motion.div key={desk.id}
             initial={{ opacity: 0, scale: 0.75, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.75 }}
             transition={{ ...sp, stiffness: 240 }} className="absolute"
-            style={{ zIndex: 20, bottom: `${DESK_BOTTOM}%`, left: `${DESK_LEFT}%`, width: `${DESK_WIDTH}%`, maxHeight: "85%" }}
+            style={{ zIndex: 10, bottom: `${DESK_BOTTOM}%`, left: `${DESK_LEFT}%`, width: `${DESK_WIDTH}%`, maxHeight: "85%" }}
           >
             <Img src={desk.image} alt={desk.name} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── CHAIR ── z-20, di depan meja */}
+      <AnimatePresence>
+        {chair && (
+          <motion.div key={chair.id}
+            initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
+            transition={sp} className="absolute"
+            style={{ zIndex: 20, bottom: `${DESK_BOTTOM + 5}%`, left: "10%", width: "75%", maxHeight: "80%" }}
+          >
+            <Img src={chair.image} alt={chair.name} />
           </motion.div>
         )}
       </AnimatePresence>
