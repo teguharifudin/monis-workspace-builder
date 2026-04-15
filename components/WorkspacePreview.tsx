@@ -18,15 +18,12 @@ const DESK_CENTER  = DESK_LEFT + DESK_WIDTH / 2;
 const DESK_RIGHT   = DESK_LEFT + DESK_WIDTH;
 const DESK_SURFACE = DESK_BOTTOM + (DESK_WIDTH * (9 / 16)) * 0.58;
 
-// Style untuk setiap item: background putih + multiply = bg gambar transparan
-const blendStyle: React.CSSProperties = {
-  mixBlendMode: "multiply",
-  backgroundColor: "#ffffff",
-};
+// blendStyle hanya untuk container yang butuh — tidak dipakai di wrapper div
+// Blend mode ada di <Img> langsung
 
 // eslint-disable-next-line @next/next/no-img-element
 const Img = ({ src, alt }: { src: string; alt: string }) => (
-  <img src={src} alt={alt} className="w-full h-auto block" />
+  <img src={src} alt={alt} className="w-full h-auto block" style={{ mixBlendMode: "multiply" }} />
 );
 
 export default function WorkspacePreview({ desk, chair, accessories }: WorkspacePreviewProps) {
@@ -74,7 +71,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6, y: 15 }}
             transition={sp}
             className="absolute"
-            style={{ ...blendStyle, zIndex: 10, bottom: "35%", left: "10%", width: "75%", maxHeight: "80%" }}
+            style={{ zIndex: 10, bottom: "35%", left: "10%", width: "75%", maxHeight: "80%" }}
           >
             <Img src={chair.image} alt={chair.name} />
           </motion.div>
@@ -88,7 +85,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             initial={{ opacity: 0, scale: 0.75, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.75, y: 20 }}
             transition={{ ...sp, stiffness: 240 }}
             className="absolute"
-            style={{ ...blendStyle, zIndex: 20, bottom: `${DESK_BOTTOM}%`, left: `${DESK_LEFT}%`, width: `${DESK_WIDTH}%`, maxHeight: "85%" }}
+            style={{ zIndex: 20, bottom: `${DESK_BOTTOM}%`, left: `${DESK_LEFT}%`, width: `${DESK_WIDTH}%`, maxHeight: "85%" }}
           >
             <Img src={desk.image} alt={desk.name} />
           </motion.div>
@@ -108,7 +105,6 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
               <motion.div key={m.id} className="flex-1"
                 initial={{ opacity: 0, scale: 0.5, y: -8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...sp, delay: i * 0.1 }}
-                style={blendStyle}
               >
                 <Img src={m.image} alt={m.name} />
               </motion.div>
@@ -124,7 +120,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             initial={{ opacity: 0, x: 15, rotate: 15 }} animate={{ opacity: 1, x: 0, rotate: 0 }} exit={{ opacity: 0, x: 12 }}
             transition={sp}
             className="absolute"
-            style={{ ...blendStyle, zIndex: 30, bottom: `${DESK_SURFACE}%`, left: `${DESK_RIGHT - 14}%`, width: "7%" }}
+            style={{ zIndex: 30, bottom: `${DESK_SURFACE}%`, left: `${DESK_RIGHT - 14}%`, width: "7%" }}
           >
             <Img src={lamp.image} alt={lamp.name} />
           </motion.div>
@@ -141,7 +137,6 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
               <motion.div key={acc.id} className="flex-1"
                 initial={{ opacity: 0, scale: 0.3, y: -8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.3 }}
                 transition={{ ...sp, delay: i * 0.07 }}
-                style={blendStyle}
               >
                 <Img src={acc.image} alt={acc.name} />
               </motion.div>
@@ -158,8 +153,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
               <motion.div key={acc.id}
                 initial={{ opacity: 0, scale: 0.5, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...sp, delay: i * 0.07 }}
-                className="aspect-square"
-                style={blendStyle}
+                style={{ aspectRatio: "1" }}
               >
                 <Img src={acc.image} alt={acc.name} />
               </motion.div>
