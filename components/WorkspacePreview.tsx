@@ -90,17 +90,14 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* ── MONITORS + ACCESSORIES di atas meja ──
-           Tampil dengan atau tanpa meja.
-           Jika ada meja: posisi di DESK_SURFACE.
-           Jika tidak ada meja: posisi di tengah scene. */}
+      {/* ── MONITORS + ACCESSORIES di atas meja ── */}
       <AnimatePresence>
         {hasDeskItems && (
           <motion.div key="desk-items"
-            className="absolute flex items-end justify-center gap-[1%]"
+            className="absolute flex items-start justify-center gap-[1%]"
             style={{
               zIndex: 30,
-              bottom: desk ? `${DESK_SURFACE}%` : "55%",
+              top: desk ? `${100 - DESK_SURFACE - 30}%` : "10%",
               left: desk ? `${DESK_CENTER}%` : "50%",
               transform: "translateX(-50%)",
               width: deskItems.length === 1 ? "28%" : deskItems.length === 2 ? "40%" : deskItems.length === 3 ? "50%" : "60%",
@@ -118,7 +115,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* ── LAMP ── di samping meja (kanan), tampil dengan atau tanpa meja */}
+      {/* ── LAMP ── di samping meja (kanan) */}
       <AnimatePresence>
         {hasLamp && lamps.map((lamp, i) => (
           <motion.div key={lamp.id}
@@ -126,7 +123,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             transition={{ ...sp, delay: i * 0.1 }} className="absolute"
             style={{
               zIndex: 30,
-              bottom: desk ? `${DESK_SURFACE}%` : "40%",
+              top: desk ? `${100 - DESK_SURFACE - 28}%` : "35%",
               left: desk ? `${DESK_RIGHT - 12 - i * 9}%` : `${75 + i * 8}%`,
               width: "8%",
             }}
