@@ -10,13 +10,9 @@ interface WorkspacePreviewProps {
   accessories: Product[];
 }
 
-// Semua gambar 920x920, objek aktual ~60% dari canvas dengan padding ~20% tiap sisi
-// Scene 16:9, floor mulai dari bottom 40%
-// Desk surface (tempat monitor duduk) ~58% dari bottom
-
-const BLEND: React.CSSProperties = { mixBlendMode: "multiply" };
-
 const sp = { type: "spring" as const, stiffness: 280, damping: 24 };
+// multiply hanya bekerja di atas background terang
+const MX: React.CSSProperties = { mixBlendMode: "multiply" };
 
 export default function WorkspacePreview({ desk, chair, accessories }: WorkspacePreviewProps) {
   const monitors = accessories.filter((a) => a.category === "monitor");
@@ -27,23 +23,31 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
   return (
     <div className="w-full rounded-2xl overflow-hidden relative select-none" style={{ aspectRatio: "16/9" }}>
 
-      {/* Room background */}
+      {/* === BACKGROUND — terang agar multiply bekerja === */}
+      {/* Wall — warm light gray */}
+      <div className="absolute inset-0" style={{ background: "#f0ece6" }} />
+      {/* Wall gradient subtle */}
       <div className="absolute inset-0" style={{
-        background: "linear-gradient(180deg, #c8d4e0 0%, #dde5ee 50%, #b8a898 50%, #a08060 100%)"
+        background: "linear-gradient(180deg, #e8e2da 0%, #f0ece6 40%, #f0ece6 55%, #d4c4a8 55%, #c8b490 100%)"
       }} />
-      {/* Wall subtle gradient */}
-      <div className="absolute inset-0" style={{
-        background: "linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%, transparent 100%)"
+      {/* Floor wood planks */}
+      <div className="absolute bottom-0 left-0 right-0" style={{
+        height: "45%",
+        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 59px, rgba(160,120,60,0.12) 60px)",
+        backgroundSize: "60px 100%",
       }} />
-      {/* Floor wood lines */}
-      <div className="absolute bottom-0 left-0 right-0" style={{ height: "50%", opacity: 0.15,
-        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 48px, #5c3d11 49px)",
+      {/* Floor sheen */}
+      <div className="absolute bottom-0 left-0 right-0" style={{
+        height: "45%",
+        background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 40%)",
       }} />
+      {/* Wall/floor line */}
+      <div className="absolute left-0 right-0 h-[2px]" style={{ bottom: "45%", background: "rgba(160,130,90,0.3)" }} />
       {/* Vignette */}
       <div className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{ boxShadow: "inset 0 0 100px rgba(0,0,0,0.18)" }} />
+        style={{ boxShadow: "inset 0 0 80px rgba(0,0,0,0.12)" }} />
 
-      {/* Empty state */}
+      {/* === EMPTY STATE === */}
       {isEmpty && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20">
@@ -56,28 +60,31 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
       )}
 
       {/*
-        LAYOUT (% dari container 16:9):
-        - Floor starts at bottom 50%
-        - Desk bottom edge: 50% from bottom (sits on floor)
-        - Desk width: 58% of container (gambar 920px, objek ~55% dari canvas)
-        - Chair bottom edge: 50% from bottom
-        - Chair width: 24% (proporsional dengan meja — kursi ~40% lebar meja)
-        - Monitor bottom: 58% from bottom (di atas permukaan meja)
-        - Monitor width: 32% per monitor
-        - Lamp bottom: 56%, right side
-        - Accessories: 52% from bottom, left side
+        Semua gambar 920x920 square, objek di tengah dengan padding ~15% tiap sisi.
+        Scene 16:9. Floor line = bottom 45%.
+        DESK: lebar 52%, bottom 45%, center horizontal
+        CHAIR: lebar 20%, bottom 45%, sedikit ke kiri dari center
+        MONITOR: lebar 30% per monitor, bottom 60%
+        LAMP: lebar 7%, bottom 58%, kanan meja
+        ACCESSORIES: lebar 6% per item, bottom 57%, kiri meja
       */}
 
-      {/* CHAIR — di belakang meja, sedikit ke kiri dari center */}
+      {/* CHAIR — di belakang meja */}
       <AnimatePresence>
         {chair && (
           <motion.div key={chair.id}
-            initial={{ opacity: 0, scale: 0.6, y: 25 }}
+            initial={{ opacity: 0, scale: 0.6, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.6, y: 20 }}
+            exit={{ opacity: 0, scale: 0.6, y: 15 }}
             transition={sp}
             className="absolute z-10"
-            style={{ ...BLEND, bottom: "48%", left: "50%", marginLeft: "-12%", width: "24%" }}
+            style={{
+              ...MX,
+              bottom: "43%",
+              left: "50%",
+              transform: "translateX(-30%)",
+              width: "20%",
+            }}
           >
             <Image src={chair.image} alt={chair.name} width={400} height={400}
               className="w-full h-auto" unoptimized />
@@ -85,16 +92,22 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* DESK — center, sits on floor */}
+      {/* DESK — center, duduk di lantai */}
       <AnimatePresence>
         {desk && (
           <motion.div key={desk.id}
-            initial={{ opacity: 0, scale: 0.75, y: 35 }}
+            initial={{ opacity: 0, scale: 0.75, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.75, y: 25 }}
+            exit={{ opacity: 0, scale: 0.75, y: 20 }}
             transition={{ ...sp, stiffness: 240 }}
             className="absolute z-20"
-            style={{ ...BLEND, bottom: "48%", left: "50%", marginLeft: "-29%", width: "58%" }}
+            style={{
+              ...MX,
+              bottom: "43%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "52%",
+            }}
           >
             <Image src={desk.image} alt={desk.name} width={600} height={600}
               className="w-full h-auto" unoptimized />
@@ -102,21 +115,21 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* MONITORS — on desk surface */}
+      {/* MONITORS — di atas permukaan meja */}
       <AnimatePresence>
         {desk && monitors.length > 0 && (
           <motion.div
             key={monitors.map((m) => m.id).join("-")}
-            initial={{ opacity: 0, y: -25, scale: 0.65 }}
+            initial={{ opacity: 0, y: -20, scale: 0.65 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.65 }}
+            exit={{ opacity: 0, y: -15, scale: 0.65 }}
             transition={sp}
             className="absolute z-30 flex items-end gap-[0.5%]"
             style={{
               bottom: "60%",
               left: "50%",
-              marginLeft: monitors.length === 1 ? "-16%" : monitors.length === 2 ? "-24%" : "-30%",
-              width: monitors.length === 1 ? "32%" : monitors.length === 2 ? "48%" : "60%",
+              transform: `translateX(${monitors.length === 1 ? "-50%" : monitors.length === 2 ? "-50%" : "-50%"})`,
+              width: monitors.length === 1 ? "30%" : monitors.length === 2 ? "46%" : "58%",
             }}
           >
             {monitors.map((m, i) => (
@@ -124,7 +137,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
                 initial={{ opacity: 0, scale: 0.5, y: -8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...sp, delay: i * 0.1 }}
-                style={BLEND}
+                style={MX}
               >
                 <Image src={m.image} alt={m.name} width={400} height={400}
                   className="w-full h-auto" unoptimized />
@@ -138,12 +151,12 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
       <AnimatePresence>
         {desk && lamp && (
           <motion.div key={lamp.id}
-            initial={{ opacity: 0, x: 18, rotate: 18 }}
+            initial={{ opacity: 0, x: 15, rotate: 15 }}
             animate={{ opacity: 1, x: 0, rotate: 0 }}
-            exit={{ opacity: 0, x: 14, rotate: 14 }}
+            exit={{ opacity: 0, x: 12 }}
             transition={sp}
             className="absolute z-30"
-            style={{ ...BLEND, bottom: "55%", right: "18%", width: "8%" }}
+            style={{ ...MX, bottom: "56%", right: "22%", width: "7%" }}
           >
             <Image src={lamp.image} alt={lamp.name} width={120} height={120}
               className="w-full h-auto" unoptimized />
@@ -151,19 +164,19 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* ACCESSORIES — kiri meja, di atas permukaan */}
+      {/* ACCESSORIES — kiri meja */}
       <AnimatePresence>
         {desk && others.length > 0 && (
           <motion.div key="acc-row" className="absolute z-30 flex items-end gap-[1%]"
-            style={{ bottom: "54%", left: "19%", width: "22%" }}
+            style={{ bottom: "55%", left: "24%", width: "20%" }}
           >
             {others.slice(0, 4).map((acc, i) => (
               <motion.div key={acc.id} className="flex-1"
-                initial={{ opacity: 0, scale: 0.3, y: -10 }}
+                initial={{ opacity: 0, scale: 0.3, y: -8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.3 }}
                 transition={{ ...sp, delay: i * 0.07 }}
-                style={BLEND}
+                style={MX}
               >
                 <Image src={acc.image} alt={acc.name} width={100} height={100}
                   className="w-full h-auto" unoptimized />
@@ -182,10 +195,10 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
                 initial={{ opacity: 0, scale: 0.5, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...sp, delay: i * 0.07 }}
-                className="bg-white/75 backdrop-blur-sm rounded-2xl aspect-square relative shadow-lg"
-                style={BLEND}
+                className="rounded-2xl aspect-square relative"
+                style={MX}
               >
-                <Image src={acc.image} alt={acc.name} fill className="object-contain p-2" unoptimized />
+                <Image src={acc.image} alt={acc.name} fill className="object-contain" unoptimized />
               </motion.div>
             ))}
           </div>
@@ -197,7 +210,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         {!isEmpty && (
           <motion.div
             initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="absolute top-3 right-3 z-40 flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-1 rounded-full"
+            className="absolute top-3 right-3 z-40 flex items-center gap-1.5 bg-black/50 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-1 rounded-full"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
             {[desk, chair, ...accessories].filter(Boolean).length} items
