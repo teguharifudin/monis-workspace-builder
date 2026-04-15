@@ -82,7 +82,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
           <motion.div key={chair.id}
             initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
             transition={sp} className="absolute"
-            style={{ zIndex: 20, bottom: "31%", left: "10%", width: "75%", maxHeight: "80%" }}
+            style={{ zIndex: 35, bottom: "31%", left: "10%", width: "75%", maxHeight: "80%" }}
           >
             <Img src={chair.image} alt={chair.name} />
           </motion.div>
