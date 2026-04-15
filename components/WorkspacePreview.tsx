@@ -64,13 +64,13 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         </motion.div>
       )}
 
-      {/* ── CHAIR ── z-10, di belakang meja */}
+      {/* ── CHAIR ── z-10, di belakang meja, bottom sama dengan meja */}
       <AnimatePresence>
         {chair && (
           <motion.div key={chair.id}
             initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
             transition={sp} className="absolute"
-            style={{ zIndex: 10, bottom: "30%", left: "10%", width: "75%", maxHeight: "80%" }}
+            style={{ zIndex: 10, bottom: `${DESK_BOTTOM}%`, left: "22%", width: "30%" }}
           >
             <Img src={chair.image} alt={chair.name} />
           </motion.div>
