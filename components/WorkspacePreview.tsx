@@ -97,7 +97,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute flex items-start justify-center gap-[1%]"
             style={{
               zIndex: 30,
-              top: `${100 - DESK_SURFACE - 42}%`,
+              top: `${100 - DESK_SURFACE - 52}%`,
               left: desk ? `${DESK_CENTER}%` : "50%",
               transform: "translateX(-50%)",
               width: deskItems.length === 1 ? "28%" : deskItems.length === 2 ? "40%" : deskItems.length === 3 ? "50%" : "60%",
