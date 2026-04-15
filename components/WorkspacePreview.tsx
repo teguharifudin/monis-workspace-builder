@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/data/products";
+import TransparentImg from "@/components/TransparentImg";
 
 interface WorkspacePreviewProps {
   desk: Product | null;
@@ -11,19 +12,14 @@ interface WorkspacePreviewProps {
 
 const sp = { type: "spring" as const, stiffness: 280, damping: 24 };
 
-// Desk position constants — single source of truth
 const DESK_BOTTOM  = 22;
 const DESK_LEFT    = 15;
 const DESK_WIDTH   = 70;
-const DESK_CENTER  = DESK_LEFT + DESK_WIDTH / 2;        // 50%
-const DESK_RIGHT   = DESK_LEFT + DESK_WIDTH;             // 85%
-const DESK_SURFACE = DESK_BOTTOM + (DESK_WIDTH * (9 / 16)) * 0.52; // ~47%
+const DESK_CENTER  = DESK_LEFT + DESK_WIDTH / 2;
+const DESK_RIGHT   = DESK_LEFT + DESK_WIDTH;
+const DESK_SURFACE = DESK_BOTTOM + (DESK_WIDTH * (9 / 16)) * 0.52;
 
-// img dengan mix-blend-mode multiply langsung — background putih jadi transparan
-// eslint-disable-next-line @next/next/no-img-element
-const Img = ({ src, alt, className = "w-full h-auto block" }: { src: string; alt: string; className?: string }) => (
-  <img src={src} alt={alt} className={className} style={{ mixBlendMode: "multiply" }} />
-);
+const Img = TransparentImg;
 
 export default function WorkspacePreview({ desk, chair, accessories }: WorkspacePreviewProps) {
   const monitors = accessories.filter((a) => a.category === "monitor");
