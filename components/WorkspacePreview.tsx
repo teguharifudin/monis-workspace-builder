@@ -123,7 +123,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             transition={{ ...sp, delay: i * 0.1 }} className="absolute"
             style={{
               zIndex: 30,
-              top: `${100 - DESK_SURFACE - 28}%`,
+              top: `${100 - DESK_SURFACE - 52}%`,
               left: desk ? `${DESK_RIGHT - 12 - i * 9}%` : `${75 + i * 8}%`,
               width: "8%",
             }}
