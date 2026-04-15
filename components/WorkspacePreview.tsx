@@ -80,10 +80,9 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute z-10"
             style={{
               ...MX,
-              bottom: "2%",
-              left: "50%",
-              transform: "translateX(-20%)",
-              width: "28%",
+              bottom: "35%",
+              left: "10%",
+              width: "75%",
               maxHeight: "80%",
             }}
           >
@@ -104,9 +103,8 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute z-20"
             style={{
               ...MX,
-              bottom: "2%",
-              left: "50%",
-              transform: "translateX(-50%)",
+              bottom: "25%",
+              left: "20%",
               width: "70%",
               maxHeight: "85%",
             }}
@@ -128,7 +126,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             transition={sp}
             className="absolute z-30 flex items-end gap-[0.5%]"
             style={{
-              bottom: "42%",
+              bottom: "55%",
               left: "50%",
               transform: "translateX(-50%)",
               width: monitors.length === 1 ? "28%" : monitors.length === 2 ? "44%" : "56%",
@@ -158,7 +156,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             exit={{ opacity: 0, x: 12 }}
             transition={sp}
             className="absolute z-30"
-            style={{ ...MX, bottom: "36%", right: "16%", width: "7%" }}
+            style={{ ...MX, bottom: "48%", right: "18%", width: "7%" }}
           >
             <Image src={lamp.image} alt={lamp.name} width={120} height={120}
               className="w-full h-auto" unoptimized />
@@ -170,7 +168,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
       <AnimatePresence>
         {desk && others.length > 0 && (
           <motion.div key="acc-row" className="absolute z-30 flex items-end gap-[1%]"
-            style={{ bottom: "35%", left: "18%", width: "22%" }}
+            style={{ bottom: "47%", left: "22%", width: "22%" }}
           >
             {others.slice(0, 4).map((acc, i) => (
               <motion.div key={acc.id} className="flex-1"
