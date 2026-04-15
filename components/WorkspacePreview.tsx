@@ -11,28 +11,30 @@ interface WorkspacePreviewProps {
 
 const sp = { type: "spring" as const, stiffness: 280, damping: 24 };
 
-const DESK_BOTTOM  = 25;
-const DESK_LEFT    = 20;
+// Desk position constants — single source of truth
+const DESK_BOTTOM  = 22;
+const DESK_LEFT    = 15;
 const DESK_WIDTH   = 70;
-const DESK_CENTER  = DESK_LEFT + DESK_WIDTH / 2;
-const DESK_RIGHT   = DESK_LEFT + DESK_WIDTH;
-const DESK_SURFACE = DESK_BOTTOM + (DESK_WIDTH * (9 / 16)) * 0.58;
+const DESK_CENTER  = DESK_LEFT + DESK_WIDTH / 2;        // 50%
+const DESK_RIGHT   = DESK_LEFT + DESK_WIDTH;             // 85%
+const DESK_SURFACE = DESK_BOTTOM + (DESK_WIDTH * (9 / 16)) * 0.52; // ~47%
 
-// Style untuk setiap item: multiply langsung pada img tag
-const blendStyle: React.CSSProperties = {
-  mixBlendMode: "multiply",
-};
-
+// img dengan mix-blend-mode multiply langsung — background putih jadi transparan
 // eslint-disable-next-line @next/next/no-img-element
-const Img = ({ src, alt }: { src: string; alt: string }) => (
-  <img src={src} alt={alt} className="w-full h-auto block" style={{ mixBlendMode: "multiply" }} />
+const Img = ({ src, alt, className = "w-full h-auto block" }: { src: string; alt: string; className?: string }) => (
+  <img src={src} alt={alt} className={className} style={{ mixBlendMode: "multiply" }} />
 );
 
 export default function WorkspacePreview({ desk, chair, accessories }: WorkspacePreviewProps) {
   const monitors = accessories.filter((a) => a.category === "monitor");
-  const lamp     = accessories.find((a)  => a.category === "lamp");
+  const lamps    = accessories.filter((a) => a.category === "lamp");
   const others   = accessories.filter((a) => a.category === "accessory");
   const isEmpty  = !desk && !chair && accessories.length === 0;
+
+  // Items yang tampil di atas meja (dengan atau tanpa meja)
+  const deskItems = [...monitors, ...others]; // monitor, keyboard, mouse, webcam, dll
+  const hasDeskItems = deskItems.length > 0;
+  const hasLamp = lamps.length > 0;
 
   return (
     <div className="w-full rounded-2xl overflow-hidden relative select-none" style={{ aspectRatio: "16/9" }}>
@@ -66,106 +68,77 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         </motion.div>
       )}
 
-      {/* CHAIR */}
+      {/* ── CHAIR ── z-10, di belakang meja */}
       <AnimatePresence>
         {chair && (
           <motion.div key={chair.id}
-            initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6, y: 15 }}
-            transition={sp}
-            className="absolute"
-            style={{ ...blendStyle, zIndex: 10, bottom: "35%", left: "10%", width: "75%", maxHeight: "80%" }}
+            initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
+            transition={sp} className="absolute"
+            style={{ zIndex: 10, bottom: "30%", left: "10%", width: "75%", maxHeight: "80%" }}
           >
             <Img src={chair.image} alt={chair.name} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* DESK */}
+      {/* ── DESK ── z-20 */}
       <AnimatePresence>
         {desk && (
           <motion.div key={desk.id}
-            initial={{ opacity: 0, scale: 0.75, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.75, y: 20 }}
-            transition={{ ...sp, stiffness: 240 }}
-            className="absolute"
-            style={{ ...blendStyle, zIndex: 20, bottom: `${DESK_BOTTOM}%`, left: `${DESK_LEFT}%`, width: `${DESK_WIDTH}%`, maxHeight: "85%" }}
+            initial={{ opacity: 0, scale: 0.75, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.75 }}
+            transition={{ ...sp, stiffness: 240 }} className="absolute"
+            style={{ zIndex: 20, bottom: `${DESK_BOTTOM}%`, left: `${DESK_LEFT}%`, width: `${DESK_WIDTH}%`, maxHeight: "85%" }}
           >
             <Img src={desk.image} alt={desk.name} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* MONITORS */}
+      {/* ── MONITORS + ACCESSORIES di atas meja ──
+           Tampil dengan atau tanpa meja.
+           Jika ada meja: posisi di DESK_SURFACE.
+           Jika tidak ada meja: posisi di tengah scene. */}
       <AnimatePresence>
-        {desk && monitors.length > 0 && (
-          <motion.div key={monitors.map((m) => m.id).join("-")}
-            initial={{ opacity: 0, y: -20, scale: 0.65 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -15, scale: 0.65 }}
-            transition={sp}
-            className="absolute flex items-end gap-[1%]"
-            style={{ zIndex: 30, bottom: `${DESK_SURFACE}%`, left: `${DESK_CENTER}%`, transform: "translateX(-50%)", width: monitors.length === 1 ? "26%" : monitors.length === 2 ? "40%" : "52%" }}
+        {hasDeskItems && (
+          <motion.div key="desk-items"
+            className="absolute flex items-end justify-center gap-[1%]"
+            style={{
+              zIndex: 30,
+              bottom: desk ? `${DESK_SURFACE}%` : "55%",
+              left: desk ? `${DESK_CENTER}%` : "50%",
+              transform: "translateX(-50%)",
+              width: deskItems.length === 1 ? "28%" : deskItems.length === 2 ? "40%" : deskItems.length === 3 ? "50%" : "60%",
+            }}
           >
-            {monitors.map((m, i) => (
-              <motion.div key={m.id} className="flex-1"
-                initial={{ opacity: 0, scale: 0.5, y: -8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ ...sp, delay: i * 0.1 }}
-                style={blendStyle}
+            {deskItems.map((item, i) => (
+              <motion.div key={item.id} className="flex-1"
+                initial={{ opacity: 0, scale: 0.5, y: -10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ ...sp, delay: i * 0.08 }}
               >
-                <Img src={m.image} alt={m.name} />
+                <Img src={item.image} alt={item.name} />
               </motion.div>
             ))}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* LAMP */}
+      {/* ── LAMP ── di samping meja (kanan), tampil dengan atau tanpa meja */}
       <AnimatePresence>
-        {desk && lamp && (
+        {hasLamp && lamps.map((lamp, i) => (
           <motion.div key={lamp.id}
-            initial={{ opacity: 0, x: 15, rotate: 15 }} animate={{ opacity: 1, x: 0, rotate: 0 }} exit={{ opacity: 0, x: 12 }}
-            transition={sp}
-            className="absolute"
-            style={{ ...blendStyle, zIndex: 30, bottom: `${DESK_SURFACE}%`, left: `${DESK_RIGHT - 14}%`, width: "7%" }}
+            initial={{ opacity: 0, x: 20, rotate: 15 }} animate={{ opacity: 1, x: 0, rotate: 0 }} exit={{ opacity: 0, x: 15 }}
+            transition={{ ...sp, delay: i * 0.1 }} className="absolute"
+            style={{
+              zIndex: 30,
+              bottom: desk ? `${DESK_SURFACE}%` : "40%",
+              left: desk ? `${DESK_RIGHT - 12 - i * 9}%` : `${75 + i * 8}%`,
+              width: "8%",
+            }}
           >
             <Img src={lamp.image} alt={lamp.name} />
           </motion.div>
-        )}
+        ))}
       </AnimatePresence>
-
-      {/* ACCESSORIES on desk */}
-      <AnimatePresence>
-        {desk && others.length > 0 && (
-          <motion.div key="acc-row" className="absolute flex items-end gap-[1%]"
-            style={{ zIndex: 30, bottom: `${DESK_SURFACE}%`, left: `${DESK_LEFT + 2}%`, width: "22%" }}
-          >
-            {others.slice(0, 4).map((acc, i) => (
-              <motion.div key={acc.id} className="flex-1"
-                initial={{ opacity: 0, scale: 0.3, y: -8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.3 }}
-                transition={{ ...sp, delay: i * 0.07 }}
-                style={blendStyle}
-              >
-                <Img src={acc.image} alt={acc.name} />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ACCESSORIES tanpa desk */}
-      {!desk && others.length > 0 && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="grid grid-cols-3 gap-3 p-6 w-[65%]">
-            {others.slice(0, 6).map((acc, i) => (
-              <motion.div key={acc.id}
-                initial={{ opacity: 0, scale: 0.5, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ ...sp, delay: i * 0.07 }}
-                className="aspect-square"
-                style={blendStyle}
-              >
-                <Img src={acc.image} alt={acc.name} />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* BADGE */}
       <AnimatePresence>
