@@ -115,7 +115,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* MONITORS — di atas permukaan meja */}
+      {/* MONITORS — center di atas meja (desk center = left 20% + width 70%/2 = 55%) */}
       <AnimatePresence>
         {desk && monitors.length > 0 && (
           <motion.div
@@ -127,7 +127,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute z-30 flex items-end gap-[0.5%]"
             style={{
               bottom: "55%",
-              left: "50%",
+              left: "55%",
               transform: "translateX(-50%)",
               width: monitors.length === 1 ? "28%" : monitors.length === 2 ? "44%" : "56%",
             }}
@@ -147,7 +147,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* LAMP — kanan meja */}
+      {/* LAMP — kanan meja (desk right edge = 20% + 70% = 90%, lamp di 78%) */}
       <AnimatePresence>
         {desk && lamp && (
           <motion.div key={lamp.id}
@@ -156,7 +156,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             exit={{ opacity: 0, x: 12 }}
             transition={sp}
             className="absolute z-30"
-            style={{ ...MX, bottom: "48%", right: "18%", width: "7%" }}
+            style={{ ...MX, bottom: "48%", left: "78%", width: "7%" }}
           >
             <Image src={lamp.image} alt={lamp.name} width={120} height={120}
               className="w-full h-auto" unoptimized />
@@ -164,11 +164,11 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         )}
       </AnimatePresence>
 
-      {/* ACCESSORIES — kiri meja */}
+      {/* ACCESSORIES — kiri meja (desk left = 20%, accessories mulai 22%) */}
       <AnimatePresence>
         {desk && others.length > 0 && (
           <motion.div key="acc-row" className="absolute z-30 flex items-end gap-[1%]"
-            style={{ bottom: "47%", left: "22%", width: "22%" }}
+            style={{ ...MX, bottom: "47%", left: "22%", width: "22%" }}
           >
             {others.slice(0, 4).map((acc, i) => (
               <motion.div key={acc.id} className="flex-1"
@@ -176,7 +176,6 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.3 }}
                 transition={{ ...sp, delay: i * 0.07 }}
-                style={MX}
               >
                 <Image src={acc.image} alt={acc.name} width={100} height={100}
                   className="w-full h-auto" unoptimized />
@@ -189,14 +188,13 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
       {/* Accessories tanpa desk */}
       {!desk && others.length > 0 && (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <div className="grid grid-cols-3 gap-3 p-6 w-[65%]">
+          <div className="grid grid-cols-3 gap-3 p-6 w-[65%]" style={MX}>
             {others.slice(0, 6).map((acc, i) => (
               <motion.div key={acc.id}
                 initial={{ opacity: 0, scale: 0.5, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...sp, delay: i * 0.07 }}
-                className="rounded-2xl aspect-square relative"
-                style={MX}
+                className="aspect-square relative"
               >
                 <Image src={acc.image} alt={acc.name} fill className="object-contain" unoptimized />
               </motion.div>
