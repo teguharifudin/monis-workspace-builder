@@ -64,13 +64,13 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
         </motion.div>
       )}
 
-      {/* ── CHAIR ── z-10, di belakang meja, bottom sama dengan meja */}
+      {/* ── CHAIR ── z-10, di belakang meja */}
       <AnimatePresence>
         {chair && (
           <motion.div key={chair.id}
             initial={{ opacity: 0, scale: 0.6, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6 }}
             transition={sp} className="absolute"
-            style={{ zIndex: 10, bottom: `${DESK_BOTTOM}%`, left: "22%", width: "30%" }}
+            style={{ zIndex: 10, bottom: `${DESK_BOTTOM}%`, left: "10%", width: "75%", maxHeight: "80%" }}
           >
             <Img src={chair.image} alt={chair.name} />
           </motion.div>
@@ -97,7 +97,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             className="absolute flex items-start justify-center gap-[1%]"
             style={{
               zIndex: 30,
-              top: desk ? `${100 - DESK_SURFACE - 30}%` : "10%",
+              top: `${100 - DESK_SURFACE - 30}%`,
               left: desk ? `${DESK_CENTER}%` : "50%",
               transform: "translateX(-50%)",
               width: deskItems.length === 1 ? "28%" : deskItems.length === 2 ? "40%" : deskItems.length === 3 ? "50%" : "60%",
@@ -123,7 +123,7 @@ export default function WorkspacePreview({ desk, chair, accessories }: Workspace
             transition={{ ...sp, delay: i * 0.1 }} className="absolute"
             style={{
               zIndex: 30,
-              top: desk ? `${100 - DESK_SURFACE - 28}%` : "35%",
+              top: `${100 - DESK_SURFACE - 28}%`,
               left: desk ? `${DESK_RIGHT - 12 - i * 9}%` : `${75 + i * 8}%`,
               width: "8%",
             }}
