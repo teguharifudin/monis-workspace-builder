@@ -5,151 +5,174 @@ import Image from "next/image";
 import { Product } from "@/data/products";
 
 interface WorkspacePreviewProps {
-  desks: Product[];
-  chairs: Product[];
+  desk: Product | null;
+  chair: Product | null;
   accessories: Product[];
 }
 
-function EmptySlot({ label, icon }: { label: string; icon: string }) {
-  return (
-    <div className="w-full h-full flex flex-col items-center justify-center gap-1 border-2 border-dashed border-stone-200 rounded-xl bg-stone-50/50">
-      <span className="text-2xl opacity-30">{icon}</span>
-      <span className="text-[10px] text-stone-300 font-medium">{label}</span>
-    </div>
-  );
-}
-
-function ItemSlot({ product, animKey }: { product: Product; animKey: string }) {
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={animKey}
-        initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.85 }}
-        transition={{ type: "spring", stiffness: 320, damping: 26 }}
-        className="w-full h-full relative"
-      >
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-contain p-2"
-          unoptimized
-        />
-        <div className="absolute bottom-1 left-0 right-0 flex justify-center">
-          <span className="bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm truncate max-w-[90%]">
-            {product.name} · ${product.pricePerWeek}/wk
-          </span>
-        </div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
-export default function WorkspacePreview({ desks, chairs, accessories }: WorkspacePreviewProps) {
+export default function WorkspacePreview({ desk, chair, accessories }: WorkspacePreviewProps) {
   const monitors = accessories.filter((a) => a.category === "monitor");
-  const lamps = accessories.filter((a) => a.category === "lamp");
+  const lamp = accessories.find((a) => a.category === "lamp");
   const others = accessories.filter((a) => a.category === "accessory");
-
-  const isEmpty = desks.length === 0 && chairs.length === 0 && accessories.length === 0;
-  const hasContent = desks.length > 0 || chairs.length > 0 || accessories.length > 0;
+  const isEmpty = !desk && !chair && accessories.length === 0;
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden bg-gradient-to-b from-slate-100 to-stone-200 p-4 flex flex-col gap-3">
+    <div className="w-full rounded-2xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
+      {/* Room scene — uses CSS grid rows to simulate depth */}
+      <div className="relative w-full h-full flex flex-col bg-gradient-to-b from-slate-200 via-stone-100 to-stone-300">
 
-      {isEmpty && (
-        <div className="flex flex-col items-center justify-center py-16 text-stone-400 gap-2">
-          <span className="text-5xl">🏝️</span>
-          <p className="text-sm font-medium">Start building your Bali workspace</p>
-          <p className="text-xs opacity-60">Pick a desk to get started</p>
-        </div>
-      )}
+        {/* Wall */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#dde3ea] to-[#c8cdd4]" />
 
-      {/* Monitor row — semua monitor yang dipilih */}
-      {monitors.length > 0 && (
-        <div className="flex gap-3">
-          {monitors.map((monitor) => (
-            <div key={monitor.id} className="flex-1 h-44 rounded-xl overflow-hidden bg-white/60 shadow-sm">
-              <ItemSlot product={monitor} animKey={monitor.id} />
-            </div>
-          ))}
-        </div>
-      )}
+        {/* Floor */}
+        <div className="absolute bottom-0 left-0 right-0 h-[30%] bg-gradient-to-t from-[#b5a99a] to-[#ccc0b0]" />
 
-      {/* Desks + Lamps row */}
-      {(desks.length > 0 || lamps.length > 0) && (
-        <div className="flex gap-3">
-          {desks.map((desk) => (
-            <div key={desk.id} className="flex-1 h-36 rounded-xl overflow-hidden bg-white/60 shadow-sm">
-              <ItemSlot product={desk} animKey={desk.id} />
-            </div>
-          ))}
-          {lamps.map((lamp) => (
-            <div key={lamp.id} className="w-28 h-36 rounded-xl overflow-hidden bg-white/60 shadow-sm flex-shrink-0">
-              <ItemSlot product={lamp} animKey={lamp.id} />
-            </div>
-          ))}
-        </div>
-      )}
+        {/* Wall/floor border */}
+        <div className="absolute left-0 right-0 h-[2px] bg-[#a89880]/40" style={{ bottom: "30%" }} />
 
-      {/* Chairs row — show all selected chairs */}
-      {chairs.length > 0 && (
-        <div className="flex gap-3">
-          {chairs.map((chair) => (
-            <div key={chair.id} className="w-36 h-32 rounded-xl overflow-hidden bg-white/60 shadow-sm flex-shrink-0">
-              <ItemSlot product={chair} animKey={chair.id} />
-            </div>
-          ))}
-          {/* Accessories grid beside chairs */}
-          {others.length > 0 && (
-            <div className="flex-1 grid grid-cols-3 gap-2">
-              {others.slice(0, 6).map((acc) => (
+        {/* Empty state */}
+        {isEmpty && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10">
+            <span className="text-4xl">🏝️</span>
+            <p className="text-sm font-medium text-stone-500">Build your Bali workspace</p>
+            <p className="text-xs text-stone-400">Start by picking a desk</p>
+          </div>
+        )}
+
+        {/* CHAIR — floor level, behind desk */}
+        <AnimatePresence>
+          {chair && (
+            <motion.div
+              key={chair.id}
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              className="absolute z-10"
+              style={{ bottom: "28%", left: "50%", transform: "translateX(-44%)", width: "22%" }}
+            >
+              <Image src={chair.image} alt={chair.name} width={200} height={240}
+                className="w-full h-auto object-contain drop-shadow-lg" unoptimized />
+              <p className="text-center text-[8px] text-white/80 mt-0.5 truncate">{chair.name}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* DESK — sits on floor */}
+        <AnimatePresence>
+          {desk && (
+            <motion.div
+              key={desk.id}
+              initial={{ opacity: 0, scale: 0.85, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ type: "spring", stiffness: 280, damping: 24 }}
+              className="absolute z-20"
+              style={{ bottom: "28%", left: "50%", transform: "translateX(-50%)", width: "68%" }}
+            >
+              <Image src={desk.image} alt={desk.name} width={600} height={320}
+                className="w-full h-auto object-contain drop-shadow-xl" unoptimized />
+              <p className="text-center text-[8px] text-white/80 mt-0.5 truncate">{desk.name}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* MONITORS — on desk surface, centered */}
+        <AnimatePresence>
+          {desk && monitors.length > 0 && (
+            <motion.div
+              key="monitors"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: "spring", stiffness: 320, damping: 26 }}
+              className="absolute z-30 flex gap-[1%] items-end"
+              style={{
+                bottom: "54%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: monitors.length === 1 ? "38%" : "58%",
+              }}
+            >
+              {monitors.map((m) => (
+                <div key={m.id} className="flex-1">
+                  <Image src={m.image} alt={m.name} width={400} height={300}
+                    className="w-full h-auto object-contain drop-shadow-lg" unoptimized />
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* LAMP — right side of desk */}
+        <AnimatePresence>
+          {desk && lamp && (
+            <motion.div
+              key={lamp.id}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              className="absolute z-30"
+              style={{ bottom: "46%", right: "17%", width: "8%" }}
+            >
+              <Image src={lamp.image} alt={lamp.name} width={80} height={140}
+                className="w-full h-auto object-contain drop-shadow-md" unoptimized />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ACCESSORIES — small items on desk, left side */}
+        <AnimatePresence>
+          {desk && others.length > 0 && (
+            <motion.div
+              key="others"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute z-30 flex items-end gap-[1%]"
+              style={{ bottom: "44%", left: "17%", width: "28%" }}
+            >
+              {others.slice(0, 4).map((acc, i) => (
                 <motion.div
                   key={acc.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ type: "spring", stiffness: 320, damping: 26 }}
-                  className="h-[60px] rounded-lg overflow-hidden bg-white/60 shadow-sm relative"
+                  transition={{ delay: i * 0.05 }}
+                  className="flex-1"
+                >
+                  <Image src={acc.image} alt={acc.name} width={60} height={60}
+                    className="w-full h-auto object-contain" unoptimized />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Accessories without desk — floating grid */}
+        {!desk && others.length > 0 && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="grid grid-cols-3 gap-2 p-4 w-[70%]">
+              {others.slice(0, 6).map((acc) => (
+                <motion.div key={acc.id}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white/70 rounded-xl p-2 aspect-square relative shadow"
                 >
                   <Image src={acc.image} alt={acc.name} fill className="object-contain p-1" unoptimized />
                 </motion.div>
               ))}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* Accessories standalone (no chair selected) */}
-      {chairs.length === 0 && others.length > 0 && (
-        <div className="grid grid-cols-4 gap-2">
-          {others.slice(0, 8).map((acc) => (
-            <motion.div
-              key={acc.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="h-[70px] rounded-lg overflow-hidden bg-white/60 shadow-sm relative"
-            >
-              <Image src={acc.image} alt={acc.name} fill className="object-contain p-1" unoptimized />
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      {/* Empty hints when partial selection */}
-      {desks.length > 0 && chairs.length === 0 && others.length === 0 && lamps.length === 0 && (
-        <div className="flex gap-3">
-          <div className="w-36 h-32 rounded-xl overflow-hidden bg-white/20 shadow-sm flex-shrink-0">
-            <EmptySlot label="Add a chair" icon="💺" />
           </div>
-          <div className="flex-1 grid grid-cols-3 gap-2">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-[60px] rounded-lg border-2 border-dashed border-stone-200 bg-stone-50/50" />
-            ))}
+        )}
+
+        {/* Item count */}
+        {!isEmpty && (
+          <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full z-40 backdrop-blur-sm">
+            {[desk, chair, ...accessories].filter(Boolean).length} items
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
