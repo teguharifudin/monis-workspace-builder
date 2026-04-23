@@ -2,7 +2,7 @@
 
 An interactive workspace configurator for [monis.rent](https://monis.rent) — build your dream Bali office setup visually, then rent it.
 
-**Live URL:** [[https://monis-workspace-builder.vercel.app](https://monis-workspace-builder-sepia.vercel.app/)](https://monis-workspace-builder.vercel.app)
+**Live URL:** [https://monis-workspace-builder-sepia.vercel.app/](https://monis-workspace-builder-sepia.vercel.app/)
 
 ## Approach
 
